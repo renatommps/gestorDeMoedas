@@ -5,6 +5,8 @@
  */
 package gestordemoedas;
 
+import view.gestordemoedas.LoginFrame;
+
 /**
  *
  * @author 09700844633
@@ -16,6 +18,9 @@ public class GestorDeMoedas {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        
+        LoginFrame.getInstance();
+        
     }
     
 }
