@@ -8,11 +8,17 @@ import java.util.List;
 public class Wallet {
     
     private List<Coin> coins;
+    private double credits;
     
     public Wallet(List<Coin> coins) {
         this.coins = coins;
     }
 
+    public Wallet(List<Coin> coins, double credits) {
+        this.coins = coins;
+        this.credits = credits;
+    }
+    
     public Wallet() {
         this.coins = new ArrayList<>();
         coins.add(new Coin("Dolar", 10, 3.50));
@@ -25,14 +31,22 @@ public class Wallet {
     public List<Coin> getCoins() {
         return this.coins;
     }
-
-    public double getTotalValue() {
-       return coins.stream().mapToDouble(coin -> coin.getQuantity() * coin.getStockValue()).sum();
-    }
     
     public Wallet setCoins(LinkedList<Coin> coins) {
         this.coins = coins;
         return this;
     }
 
+    public double getCredits() {
+        return credits;
+    }
+
+    public Wallet setCredits(double credit) {
+        this.credits = credit;
+        return this;
+    }
+
+    public double getTotalValue() {
+       return coins.stream().mapToDouble(coin -> coin.getQuantity() * coin.getStockValue()).sum();
+    }
 }

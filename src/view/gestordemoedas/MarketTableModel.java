@@ -1,25 +1,18 @@
 package view.gestordemoedas;
 
 import gestordemoedas.Coin;
-import gestordemoedas.CurrencyFormatter;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 
-public class WalletTableModel extends AbstractTableModel {
+public class MarketTableModel extends AbstractTableModel {
 
-    private final CurrencyFormatter currencyFormatter;
-    private final String[] tableHeaders = {"Moeda", "Quantidade", "Cotação", "Valor total em R$"};
+    private final String[] tableHeaders = {"Moeda", "Cotação"};
     private List<Coin> coins;
 
-    WalletTableModel(List<Coin> coins) {
-        this.currencyFormatter = new CurrencyFormatter("pt", "br");
+    MarketTableModel(List<Coin> coins) {
         this.coins = coins;
         super.fireTableDataChanged();
-    }
-
-    private Object getTotalRealValue(Coin coin) {
-        return this.currencyFormatter.format(coin.getQuantity() * coin.getStockValue());
     }
     
     @Override
@@ -43,9 +36,7 @@ public class WalletTableModel extends AbstractTableModel {
          
         switch( columnIndex ) {
             case 0: return coin.getName();
-            case 1: return coin.getQuantity();
-            case 2: return coin.getStockValue();
-            case 3: return getTotalRealValue(coin);
+            case 1: return coin.getStockValue();
             default: return null;
         }
     }
