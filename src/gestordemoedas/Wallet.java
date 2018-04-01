@@ -26,6 +26,10 @@ public class Wallet {
         return this.coins;
     }
 
+    public double getTotalValue() {
+       return coins.stream().mapToDouble(coin -> coin.getQuantity() * coin.getStockValue()).sum();
+    }
+    
     public Wallet setCoins(LinkedList<Coin> coins) {
         this.coins = coins;
         return this;
