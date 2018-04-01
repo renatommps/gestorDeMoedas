@@ -1,5 +1,7 @@
 package view.gestordemoedas;
 
+import gestordemoedas.GerenciadorDeUsuarios;
+
 
 public class LoginFrame extends javax.swing.JFrame {
 
@@ -13,6 +15,7 @@ public class LoginFrame extends javax.swing.JFrame {
     
     private LoginFrame() {
         initComponents();
+        senhaIncorreta.setVisible(false);
         this.setVisible(true);
     }
 
@@ -26,6 +29,7 @@ public class LoginFrame extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
+        senhaIncorreta = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -55,6 +59,8 @@ public class LoginFrame extends javax.swing.JFrame {
             }
         });
 
+        senhaIncorreta.setText("Senha incorreta.");
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -68,7 +74,9 @@ public class LoginFrame extends javax.swing.JFrame {
                         .addComponent(jTextField1)
                         .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE))
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(152, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(senhaIncorreta)
+                .addContainerGap(108, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -80,7 +88,9 @@ public class LoginFrame extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(senhaIncorreta))
                 .addGap(18, 18, 18)
                 .addComponent(jButton2)
                 .addContainerGap(58, Short.MAX_VALUE))
@@ -90,7 +100,7 @@ public class LoginFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 459, Short.MAX_VALUE)
+            .addGap(0, 501, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
@@ -119,9 +129,14 @@ public class LoginFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jPanel4KeyReleased
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        this.setVisible(false);
-        MainScreen.getInstance();
-        this.dispose();
+        boolean b = GerenciadorDeUsuarios.getInstance().autenticar(jTextField1.getText(), jTextField2.getText());
+        if (b) {
+            this.setVisible(false);
+            MainScreen.getInstance();
+            this.dispose();
+        } else {
+            senhaIncorreta.setVisible(true);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -131,5 +146,6 @@ public class LoginFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
+    private javax.swing.JLabel senhaIncorreta;
     // End of variables declaration//GEN-END:variables
 }
