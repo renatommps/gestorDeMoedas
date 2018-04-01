@@ -50,4 +50,8 @@ public class WalletTableModel extends AbstractTableModel {
         }
     }
     
+    public void removeRow(int row) {
+        this.coins.remove(row);
+        fireTableRowsDeleted(row, row);
+    }
 }

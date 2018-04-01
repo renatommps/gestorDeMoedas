@@ -3,6 +3,8 @@ package view.gestordemoedas;
 import gestordemoedas.Wallet;
 import gestordemoedas.Coin;
 import gestordemoedas.CurrencyFormatter;
+import java.util.List;
+import javax.swing.JOptionPane;
 
 
 public class MainScreen extends javax.swing.JFrame {
@@ -32,13 +34,14 @@ public class MainScreen extends javax.swing.JFrame {
     private void updateSaleRealQuantity() {
         if ((jComboBoxSaleCurrency.getSelectedIndex() > -1) && 
                 (jFormattedTextFieldSaleQuantity.getText() != null && !jFormattedTextFieldSaleQuantity.getText().trim().isEmpty()) ){
+            
             Coin selectedCoin = wallet.getCoins().get(jComboBoxSaleCurrency.getSelectedIndex());
             double value = Double.parseDouble(jFormattedTextFieldSaleQuantity.getText()) * selectedCoin.getStockValue();
-            jTextSaleRealValue.setText(currencyFormatter.format(value));
-            jTextSaleRealValue.repaint();
+            jTextFieldSaleRealValue.setText(currencyFormatter.format(value));
+            jTextFieldSaleRealValue.repaint();
         } else {
-            jTextSaleRealValue.setText("");
-            jTextSaleRealValue.repaint();
+            jTextFieldSaleRealValue.setText("");
+            jTextFieldSaleRealValue.repaint();
         }
     }
     
@@ -57,14 +60,14 @@ public class MainScreen extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         jComboBoxSaleCurrency = new javax.swing.JComboBox<>();
         jLabel9 = new javax.swing.JLabel();
-        jTextSaleRealValue = new javax.swing.JTextField();
+        jTextFieldSaleRealValue = new javax.swing.JTextField();
         jButtonSell = new javax.swing.JButton();
         jFormattedTextFieldSaleQuantity = new javax.swing.JFormattedTextField();
         jLabelTotal1 = new javax.swing.JLabel();
         jLabelTotalCredits = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jTableWalletCoins = new javax.swing.JTable();
         jPanelMarket = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
@@ -78,7 +81,7 @@ public class MainScreen extends javax.swing.JFrame {
         jTextFieldAvaliable = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        jTableMarketCoins = new javax.swing.JTable();
         jPanelTransfer = new javax.swing.JPanel();
         jRadioButton1 = new javax.swing.JRadioButton();
         jRadioButton2 = new javax.swing.JRadioButton();
@@ -129,7 +132,7 @@ public class MainScreen extends javax.swing.JFrame {
 
     jLabel9.setText("Equivalente em R$:");
 
-    jTextSaleRealValue.setEditable(false);
+    jTextFieldSaleRealValue.setEditable(false);
 
     jButtonSell.setText("Vender");
     jButtonSell.addActionListener(new java.awt.event.ActionListener() {
@@ -165,7 +168,7 @@ public class MainScreen extends javax.swing.JFrame {
                     .addGap(45, 45, 45)
                     .addComponent(jLabel9)
                     .addGap(35, 35, 35)
-                    .addComponent(jTextSaleRealValue, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldSaleRealValue, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel7Layout.createSequentialGroup()
                     .addGap(397, 397, 397)
                     .addComponent(jButtonSell, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -182,7 +185,7 @@ public class MainScreen extends javax.swing.JFrame {
             .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(jLabel8)
                 .addComponent(jLabel9)
-                .addComponent(jTextSaleRealValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTextFieldSaleRealValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(jFormattedTextFieldSaleQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 101, Short.MAX_VALUE)
             .addComponent(jButtonSell)
@@ -197,8 +200,8 @@ public class MainScreen extends javax.swing.JFrame {
 
     jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Moedas"));
 
-    jTable1.setModel(walletTableModel);
-    jScrollPane1.setViewportView(jTable1);
+    jTableWalletCoins.setModel(walletTableModel);
+    jScrollPane1.setViewportView(jTableWalletCoins);
 
     javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
     jPanel4.setLayout(jPanel4Layout);
@@ -342,8 +345,8 @@ public class MainScreen extends javax.swing.JFrame {
 
     jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Moedas"));
 
-    jTable2.setModel(marketTableModel);
-    jScrollPane2.setViewportView(jTable2);
+    jTableMarketCoins.setModel(marketTableModel);
+    jScrollPane2.setViewportView(jTableMarketCoins);
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
@@ -500,8 +503,46 @@ public class MainScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_jFormattedTextFieldSaleQuantityKeyTyped
 
     private void jButtonSellActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSellActionPerformed
-        // TODO add your handling code here:
-        System.out.println("view.gestordemoedas.MainScreen.jButtonSellActionPerformed()");
+        
+        int coinTableIndex = jComboBoxSaleCurrency.getSelectedIndex();
+        String saleQuantityText = jFormattedTextFieldSaleQuantity.getText().trim();
+        
+        if ( (coinTableIndex > -1) && (saleQuantityText != null && !saleQuantityText.isEmpty()) ) {
+            
+            Coin selectedCoin = wallet.getCoins().get(coinTableIndex);
+            double quantity = Double.parseDouble(saleQuantityText);
+            double value = quantity * selectedCoin.getStockValue();
+            double quantityLeft = selectedCoin.getQuantity() - quantity;
+            
+            if (quantityLeft >= 0) {
+                selectedCoin.setQuantity(quantityLeft);
+                wallet.setCredits(wallet.getCredits() + value);
+                
+                if (selectedCoin.getQuantity() <= 0) {
+                    List<Coin> updatedCoins = wallet.getCoins();
+                    updatedCoins.stream().filter(coin -> coin.getQuantity() >= 0);
+                    wallet.setCoins(updatedCoins);
+                    
+                    ((WalletTableModel)jTableWalletCoins.getModel()).removeRow(coinTableIndex);
+  
+                    jComboBoxSaleCurrency.setModel(new javax.swing.DefaultComboBoxModel<>(wallet.getCoins().stream().map(Coin::getName).toArray(String[]::new)));
+                    jComboBoxSaleCurrency.repaint();
+                }
+                
+                jFormattedTextFieldSaleQuantity.setText("");
+                jLabelTotalValue.setText(currencyFormatter.format(wallet.getTotalValue()));
+                jLabelTotalCredits.setText(currencyFormatter.format(wallet.getCredits()));
+                jTextFieldSaleRealValue.setText("");
+                
+                jTableWalletCoins.repaint();
+                
+                JOptionPane.showMessageDialog(null, "Venda realizada com sucésso.","Mensagem", JOptionPane.DEFAULT_OPTION);
+            } else {
+                JOptionPane.showMessageDialog(null, "Quantidade selecionada maior que a dispinível na carteira para a moeda selecionada.","Aviso", JOptionPane.WARNING_MESSAGE);
+            } 
+        } else {
+            JOptionPane.showMessageDialog(null, "Para efetuar uma venda você deve informar uma moeda e a quantidade a ser vendida.","Aviso", JOptionPane.WARNING_MESSAGE);
+        }
     }//GEN-LAST:event_jButtonSellActionPerformed
 
     private void jComboBoxSaleCurrencyPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jComboBoxSaleCurrencyPropertyChange
@@ -573,14 +614,14 @@ public class MainScreen extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
+    private javax.swing.JTable jTableMarketCoins;
+    private javax.swing.JTable jTableWalletCoins;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextFieldAvaliable;
     private javax.swing.JTextField jTextFieldBuyingQuantity;
     private javax.swing.JTextField jTextFieldBuyingRealValue;
-    private javax.swing.JTextField jTextSaleRealValue;
+    private javax.swing.JTextField jTextFieldSaleRealValue;
     private javax.swing.JToolBar jToolBar1;
     // End of variables declaration//GEN-END:variables
 }

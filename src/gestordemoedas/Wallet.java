@@ -32,7 +32,7 @@ public class Wallet {
         return this.coins;
     }
     
-    public Wallet setCoins(LinkedList<Coin> coins) {
+    public Wallet setCoins(List<Coin> coins) {
         this.coins = coins;
         return this;
     }

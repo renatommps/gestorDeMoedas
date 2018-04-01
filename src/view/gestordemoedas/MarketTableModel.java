@@ -41,4 +41,9 @@ public class MarketTableModel extends AbstractTableModel {
         }
     }
     
+    public void removeRow(int row) {
+        this.coins.remove(row);
+        fireTableRowsDeleted(row, row);
+    }
+    
 }
