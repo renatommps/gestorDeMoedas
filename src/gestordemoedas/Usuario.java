@@ -5,6 +5,8 @@
  */
 package gestordemoedas;
 
+import gestordemoedas.Identificable;
+import gestordemoedas.Wallet;
 import java.io.Serializable;
 
 /**

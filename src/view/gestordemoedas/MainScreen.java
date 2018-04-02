@@ -3,6 +3,7 @@ package view.gestordemoedas;
 import gestordemoedas.Wallet;
 import gestordemoedas.Coin;
 import gestordemoedas.CurrencyFormatter;
+import gestordemoedas.FileManager;
 import gestordemoedas.GerenciadorDeUsuarios;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -535,6 +536,8 @@ public class MainScreen extends javax.swing.JFrame {
                 jLabelTotalValue.setText(currencyFormatter.format(wallet.getTotalValue()));
                 jLabelTotalCredits.setText(currencyFormatter.format(wallet.getCredits()));
                 jTextFieldSaleRealValue.setText("");
+                
+                GerenciadorDeUsuarios.getInstance().salvarUsuarioAtual();
                 
                 jTableWalletCoins.repaint();
                 

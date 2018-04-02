@@ -22,11 +22,11 @@ public class Wallet implements Serializable {
     
     public Wallet() {
         this.coins = new ArrayList<>();
-        coins.add(new Coin("Dolar", 10, 3.50));
-        coins.add(new Coin("BitCoin", 0.0040, 20000));
-        coins.add(new Coin("DogeCoin", 5, 10000));
-        coins.add(new Coin("Gil", 19789, 5.60));
-        coins.add(new Coin("Euro", 420, 4.50));
+        coins.add(new Coin("Dolar", 10, 3.50, false));
+        coins.add(new Coin("BitCoin", 0.0040, 20000, true));
+        coins.add(new Coin("DogeCoin", 5, 10000, true));
+        coins.add(new Coin("Gil", 19789, 5.60, false));
+        coins.add(new Coin("Euro", 420, 4.50, false));
     }
 
     public List<Coin> getCoins() {
