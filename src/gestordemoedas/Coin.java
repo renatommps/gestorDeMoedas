@@ -1,7 +1,9 @@
 package gestordemoedas;
 
+import java.io.Serializable;
 
-public class Coin {
+
+public class Coin implements Serializable {
 
     private String name;
     private double quantity;

@@ -3,6 +3,7 @@ package view.gestordemoedas;
 import gestordemoedas.Wallet;
 import gestordemoedas.Coin;
 import gestordemoedas.CurrencyFormatter;
+import gestordemoedas.GerenciadorDeUsuarios;
 import java.util.List;
 import javax.swing.JOptionPane;
 
@@ -23,7 +24,8 @@ public class MainScreen extends javax.swing.JFrame {
     
     private MainScreen() {
         this.currencyFormatter = new CurrencyFormatter("pt", "br");
-        this.wallet = new Wallet();
+        //this.wallet = new Wallet();
+        this.wallet = GerenciadorDeUsuarios.getInstance().getUsuarioAtual().getCarteira();
         this.walletTableModel = new WalletTableModel(this.wallet.getCoins());
         this.marketTableModel = new MarketTableModel(this.wallet.getCoins());
         

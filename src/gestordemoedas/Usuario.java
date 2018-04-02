@@ -15,10 +15,12 @@ public class Usuario implements Serializable, Identificable {
     
     private String nome;
     private String senha;
+    private Wallet carteira;
     
     public Usuario(String _nome, String _senha) {
         nome = _nome;
         senha = _senha;
+        carteira = new Wallet();
     }
     
     public String getID() {
@@ -29,6 +31,9 @@ public class Usuario implements Serializable, Identificable {
     }
     public String getSenha() {
         return senha;
+    }
+    public Wallet getCarteira() {
+        return carteira;
     }
     
 }

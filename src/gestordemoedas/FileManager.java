@@ -35,9 +35,13 @@ public class FileManager {
     }
     
     public void writeObject(Object obj, String filename) {
+        List<Object> all = readAllObjects(filename);
         try {
             FileOutputStream file = new FileOutputStream(filename);
             ObjectOutputStream out = new ObjectOutputStream(file);
+            for (Object o : all) {
+                out.writeObject(o);
+            }
             out.writeObject(obj);
             out.close();
             file.close();
@@ -72,6 +76,51 @@ public class FileManager {
             ex.printStackTrace();
         }
         return null;
+    }
+    
+    public <T extends Identificable> void deleteObject(String id, String filename) {
+        try {
+            FileInputStream file = new FileInputStream(filename);
+            ObjectInputStream in = new ObjectInputStream(file);
+            List<Object> rewrite = new ArrayList<>();
+            try {
+                while (true) {
+                    T obj = (T)in.readObject();
+                    if (!obj.getID().equalsIgnoreCase(id)) {
+                        rewrite.add(obj);
+                    }
+                }
+            } catch (EOFException eof) {
+                //End of file. Break the loop.
+            } catch (ClassNotFoundException ex) {
+                ex.printStackTrace();
+            }
+            in.close();
+            file.close();
+            writeAllObjects(rewrite, filename);
+            
+        } catch (FileNotFoundException ex) {
+            //Expected on first read
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    public List<Object> writeAllObjects(List<Object> objs, String filename) {
+        try {
+            FileOutputStream file = new FileOutputStream(filename);
+            ObjectOutputStream out = new ObjectOutputStream(file);
+            for (Object o : objs) {
+                out.writeObject(o);
+            }
+            out.close();
+            file.close();
+        } catch (FileNotFoundException ex) {
+            //Expected on first read
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return objs;
     }
     
     public List<Object> readAllObjects(String filename) {

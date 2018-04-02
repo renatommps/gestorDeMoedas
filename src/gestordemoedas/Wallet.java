@@ -1,11 +1,12 @@
 package gestordemoedas;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 
-public class Wallet {
+public class Wallet implements Serializable {
     
     private List<Coin> coins;
     private double credits;
