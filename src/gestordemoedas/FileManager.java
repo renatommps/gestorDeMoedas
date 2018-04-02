@@ -14,8 +14,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -48,6 +46,32 @@ public class FileManager {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+    
+    public <T extends Identificable> T readObject(String id, String filename) {
+        try {
+            FileInputStream file = new FileInputStream(filename);
+            ObjectInputStream in = new ObjectInputStream(file);
+            try {
+                while (true) {
+                    T obj = (T)in.readObject();
+                    if (obj.getID().equalsIgnoreCase(id)) {
+                        return obj;
+                    }
+                }
+            } catch (EOFException eof) {
+                //End of file. Break the loop.
+            } catch (ClassNotFoundException ex) {
+                ex.printStackTrace();
+            }
+            in.close();
+            file.close();
+        } catch (FileNotFoundException ex) {
+            //Expected on first read
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
     
     public List<Object> readAllObjects(String filename) {

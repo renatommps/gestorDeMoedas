@@ -1,7 +1,6 @@
 package gestordemoedas;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 
@@ -31,19 +30,25 @@ public class GerenciadorDeUsuarios {
         return usuarios;
     }
     
+    public Usuario procurarUsuario(String id) {
+        Usuario match = (Usuario) FileManager.getInstance().readObject(id, "usuarios");
+        return match;
+    }
+    
     public void salvarUsuario(Usuario u) {
         FileManager.getInstance().writeObject(u, "usuarios");
     }
     
     public boolean autenticar(String usuario, String senha) {
-        List<Usuario> usuarios = carregarUsuarios();
         Usuario match = null;
         boolean ret = false;
-        for (Usuario u : usuarios) {
-            if (u.getNome().equalsIgnoreCase(usuario)) {
-                match = u;
-            }
-        }
+//        List<Usuario> usuarios = carregarUsuarios();
+//        for (Usuario u : usuarios) {
+//            if (u.getID().equalsIgnoreCase(usuario)) {
+//                match = u;
+//            }
+//        }
+        match = procurarUsuario(usuario);
         if (match == null) {
             match = new Usuario(usuario, senha);
             salvarUsuario(match);

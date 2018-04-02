@@ -11,7 +11,7 @@ import java.io.Serializable;
  *
  * @author Rafael
  */
-public class Usuario implements Serializable {
+public class Usuario implements Serializable, Identificable {
     
     private String nome;
     private String senha;
@@ -21,6 +21,9 @@ public class Usuario implements Serializable {
         senha = _senha;
     }
     
+    public String getID() {
+        return nome;
+    }
     public String getNome() {
         return nome;
     }
