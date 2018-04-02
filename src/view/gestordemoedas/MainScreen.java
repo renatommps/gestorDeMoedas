@@ -13,6 +13,7 @@ public class MainScreen extends javax.swing.JFrame {
     private static MainScreen instance;
     private final CurrencyFormatter currencyFormatter;
     private Wallet wallet;
+    private Market market;
     private WalletTableModel walletTableModel;
     private MarketTableModel marketTableModel;
     
@@ -25,9 +26,10 @@ public class MainScreen extends javax.swing.JFrame {
     private MainScreen() {
         this.currencyFormatter = new CurrencyFormatter("pt", "br");
         //this.wallet = new Wallet();
+        this.market = new Market();
         this.wallet = GerenciadorDeUsuarios.getInstance().getUsuarioAtual().getCarteira();
         this.walletTableModel = new WalletTableModel(this.wallet.getCoins());
-        this.marketTableModel = new MarketTableModel(this.wallet.getCoins());
+        this.marketTableModel = new MarketTableModel(this.market.getCoins());
         
         initComponents();
         this.setVisible(true);  
@@ -47,6 +49,27 @@ public class MainScreen extends javax.swing.JFrame {
         }
     }
     
+    public void updateBuyingRealQuantity(){
+        if ((jComboBoxBuyingCoin.getSelectedIndex() > -1) && 
+                (jFormattedTextFieldBuyingQuantity.getText() != null && !jFormattedTextFieldBuyingQuantity.getText().trim().isEmpty()) ){
+            
+            Coin selectedCoin = market.getCoins().get(jComboBoxBuyingCoin.getSelectedIndex());
+            double value = Double.parseDouble(jFormattedTextFieldBuyingQuantity.getText()) * selectedCoin.getStockValue();
+            jTextFieldBuyingRealValue.setText(currencyFormatter.format(value));
+            jTextFieldBuyingRealValue.repaint();
+        } else {
+            jTextFieldBuyingRealValue.setText("");
+            jTextFieldBuyingRealValue.repaint();
+        }
+    }
+    
+    public void consumeLetter(java.awt.event.KeyEvent evt) {
+        char c  = evt.getKeyChar();
+        if (Character.isLetter(c) && !evt.isAltDown()) {
+            evt.consume();
+        }
+    }
+        
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -75,12 +98,12 @@ public class MainScreen extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jComboBoxBuyingCoin = new javax.swing.JComboBox<>();
-        jTextFieldBuyingQuantity = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         jTextFieldBuyingRealValue = new javax.swing.JTextField();
         jButtonBuy = new javax.swing.JButton();
         jLabel10 = new javax.swing.JLabel();
-        jTextFieldAvaliable = new javax.swing.JTextField();
+        jLabelTotalCreditsMarket = new javax.swing.JLabel();
+        jFormattedTextFieldBuyingQuantity = new javax.swing.JFormattedTextField();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTableMarketCoins = new javax.swing.JTable();
@@ -96,6 +119,17 @@ public class MainScreen extends javax.swing.JFrame {
         jToolBar1.setRollover(true);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jTabbedPane1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jTabbedPane1MouseEntered(evt);
+            }
+        });
+        jTabbedPane1.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                jTabbedPane1ComponentShown(evt);
+            }
+        });
 
         jPanelWallet.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
@@ -272,17 +306,14 @@ public class MainScreen extends javax.swing.JFrame {
 
     jLabel5.setText("Quantidade:");
 
-    jComboBoxBuyingCoin.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-    jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jComboBoxBuyingCoinActionPerformed(evt);
-        }
-    });
-
-    jTextFieldBuyingQuantity.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jTextFieldBuyingQuantityActionPerformed(evt);
-        }
+    jComboBoxBuyingCoin.setModel(new javax.swing.DefaultComboBoxModel<>(market.getCoins()
+        .stream()
+        .map(Coin::getName)
+        .toArray(String[]::new)));
+jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
+    public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jComboBoxBuyingCoinActionPerformed(evt);
+    }
     });
 
     jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -295,7 +326,16 @@ public class MainScreen extends javax.swing.JFrame {
     jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
     jLabel10.setText("Valor disponível na carteira em R$:");
 
-    jTextFieldAvaliable.setEditable(false);
+    jLabelTotalCreditsMarket.setText(currencyFormatter.format(wallet.getCredits()));
+
+    jFormattedTextFieldBuyingQuantity.addKeyListener(new java.awt.event.KeyAdapter() {
+        public void keyTyped(java.awt.event.KeyEvent evt) {
+            jFormattedTextFieldBuyingQuantityKeyTyped(evt);
+        }
+        public void keyReleased(java.awt.event.KeyEvent evt) {
+            jFormattedTextFieldBuyingQuantityKeyReleased(evt);
+        }
+    });
 
     javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
     jPanel6.setLayout(jPanel6Layout);
@@ -311,15 +351,15 @@ public class MainScreen extends javax.swing.JFrame {
                     .addGap(40, 40, 40)
                     .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(jComboBoxBuyingCoin, 0, 140, Short.MAX_VALUE)
-                        .addComponent(jTextFieldBuyingQuantity))
+                        .addComponent(jFormattedTextFieldBuyingQuantity))
                     .addGap(45, 45, 45)
-                    .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGap(40, 40, 40)
-                    .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jTextFieldAvaliable, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jTextFieldBuyingRealValue, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
+                        .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGap(18, 18, 18)
+                    .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jTextFieldBuyingRealValue, javax.swing.GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
+                        .addComponent(jLabelTotalCreditsMarket, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGroup(jPanel6Layout.createSequentialGroup()
                     .addGap(281, 281, 281)
                     .addComponent(jButtonBuy)))
@@ -333,13 +373,13 @@ public class MainScreen extends javax.swing.JFrame {
                 .addComponent(jComboBoxBuyingCoin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(jLabel4)
                 .addComponent(jLabel10)
-                .addComponent(jTextFieldAvaliable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jLabelTotalCreditsMarket))
             .addGap(18, 18, 18)
             .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(jLabel5)
-                .addComponent(jTextFieldBuyingQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(jLabel7)
-                .addComponent(jTextFieldBuyingRealValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jTextFieldBuyingRealValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jFormattedTextFieldBuyingQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
             .addComponent(jButtonBuy)
             .addContainerGap())
@@ -498,10 +538,7 @@ public class MainScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_jFormattedTextFieldSaleQuantityKeyReleased
 
     private void jFormattedTextFieldSaleQuantityKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jFormattedTextFieldSaleQuantityKeyTyped
-        char c  = evt.getKeyChar();
-        if (Character.isLetter(c) && !evt.isAltDown()) {
-            evt.consume();
-        }
+        consumeLetter(evt);
     }//GEN-LAST:event_jFormattedTextFieldSaleQuantityKeyTyped
 
     private void jButtonSellActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSellActionPerformed
@@ -534,6 +571,7 @@ public class MainScreen extends javax.swing.JFrame {
                 jFormattedTextFieldSaleQuantity.setText("");
                 jLabelTotalValue.setText(currencyFormatter.format(wallet.getTotalValue()));
                 jLabelTotalCredits.setText(currencyFormatter.format(wallet.getCredits()));
+                jLabelTotalCreditsMarket.setText(currencyFormatter.format(wallet.getCredits()));
                 jTextFieldSaleRealValue.setText("");
                 
                 jTableWalletCoins.repaint();
@@ -575,13 +613,26 @@ public class MainScreen extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jRadioButton1ActionPerformed
 
-    private void jTextFieldBuyingQuantityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldBuyingQuantityActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldBuyingQuantityActionPerformed
-
     private void jComboBoxBuyingCoinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxBuyingCoinActionPerformed
         // TODO add your handling code here:
+        updateBuyingRealQuantity();
     }//GEN-LAST:event_jComboBoxBuyingCoinActionPerformed
+
+    private void jFormattedTextFieldBuyingQuantityKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jFormattedTextFieldBuyingQuantityKeyTyped
+        consumeLetter(evt);
+    }//GEN-LAST:event_jFormattedTextFieldBuyingQuantityKeyTyped
+
+    private void jFormattedTextFieldBuyingQuantityKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jFormattedTextFieldBuyingQuantityKeyReleased
+        // TODO add your handling code here:   
+    }//GEN-LAST:event_jFormattedTextFieldBuyingQuantityKeyReleased
+
+    private void jTabbedPane1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTabbedPane1MouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTabbedPane1MouseEntered
+
+    private void jTabbedPane1ComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_jTabbedPane1ComponentShown
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTabbedPane1ComponentShown
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
@@ -590,6 +641,7 @@ public class MainScreen extends javax.swing.JFrame {
     private javax.swing.JButton jButtonSell;
     private javax.swing.JComboBox<String> jComboBoxBuyingCoin;
     private javax.swing.JComboBox<String> jComboBoxSaleCurrency;
+    private javax.swing.JFormattedTextField jFormattedTextFieldBuyingQuantity;
     private javax.swing.JFormattedTextField jFormattedTextFieldSaleQuantity;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -603,6 +655,7 @@ public class MainScreen extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelTotal;
     private javax.swing.JLabel jLabelTotal1;
     private javax.swing.JLabel jLabelTotalCredits;
+    private javax.swing.JLabel jLabelTotalCreditsMarket;
     private javax.swing.JLabel jLabelTotalValue;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel4;
@@ -620,8 +673,6 @@ public class MainScreen extends javax.swing.JFrame {
     private javax.swing.JTable jTableWalletCoins;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextFieldAvaliable;
-    private javax.swing.JTextField jTextFieldBuyingQuantity;
     private javax.swing.JTextField jTextFieldBuyingRealValue;
     private javax.swing.JTextField jTextFieldSaleRealValue;
     private javax.swing.JToolBar jToolBar1;
