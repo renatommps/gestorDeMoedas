@@ -3,6 +3,7 @@ package view.gestordemoedas;
 import gestordemoedas.Wallet;
 import gestordemoedas.Coin;
 import gestordemoedas.CurrencyFormatter;
+import gestordemoedas.FileManager;
 import gestordemoedas.GerenciadorDeUsuarios;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -573,6 +574,8 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
                 jLabelTotalCredits.setText(currencyFormatter.format(wallet.getCredits()));
                 jLabelTotalCreditsMarket.setText(currencyFormatter.format(wallet.getCredits()));
                 jTextFieldSaleRealValue.setText("");
+                
+                GerenciadorDeUsuarios.getInstance().salvarUsuarioAtual();
                 
                 jTableWalletCoins.repaint();
                 

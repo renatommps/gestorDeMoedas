@@ -1,5 +1,6 @@
 package gestordemoedas;
 
+import gestordemoedas.FileManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,10 @@ public class GerenciadorDeUsuarios {
     
     public void salvarUsuario(Usuario u) {
         FileManager.getInstance().writeObject(u, "usuarios");
+    }
+    
+    public void salvarUsuarioAtual() {
+        FileManager.getInstance().writeObject(usuarioAtual, "usuarios");
     }
     
     public boolean autenticar(String usuario, String senha) {
