@@ -1,16 +1,20 @@
 package gestordemoedas;
 
+import java.io.Serializable;
 
-public class Coin {
+
+public class Coin implements Serializable {
 
     private String name;
     private double quantity;
     private double stockValue;
+    private boolean crypto;
 
-    public Coin(String name, double quantity, double stockValue) {
+    public Coin(String name, double quantity, double stockValue, boolean crypto) {
         this.name = name;
         this.quantity = quantity;
         this.stockValue = stockValue;
+        this.crypto = crypto;
     }
     
     public String getName() {
@@ -37,6 +41,14 @@ public class Coin {
 
     public Coin setStockValue(double stockValue) {
         this.stockValue = stockValue;
+        return this;
+    }
+    
+    public boolean isCrypto() {
+        return crypto;
+    }
+    public Coin setCrypto(boolean crypto) {
+        this.crypto = crypto;
         return this;
     }
     
