@@ -41,6 +41,7 @@ public class GerenciadorDeUsuarios {
     }
     
     public void salvarUsuarioAtual() {
+        FileManager.getInstance().deleteObject(usuarioAtual.getID(), "usuarios");
         FileManager.getInstance().writeObject(usuarioAtual, "usuarios");
     }
     
