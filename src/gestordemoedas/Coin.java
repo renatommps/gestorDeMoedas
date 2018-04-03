@@ -10,6 +10,13 @@ public class Coin implements Serializable {
     private double stockValue;
     private boolean crypto;
 
+    public Coin(Coin another) { // copy constructor
+        this.name = another.name;
+        this.quantity = another.quantity;
+        this.stockValue = another.stockValue;
+        this.crypto = another.crypto;
+  }
+    
     public Coin(String name, double quantity, double stockValue, boolean crypto) {
         this.name = name;
         this.quantity = quantity;
@@ -50,6 +57,21 @@ public class Coin implements Serializable {
     public Coin setCrypto(boolean crypto) {
         this.crypto = crypto;
         return this;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!Coin.class.isAssignableFrom(obj.getClass())) {
+            return false;
+        }
+        final Coin other = (Coin) obj;
+        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+            return false;
+        }
+        return true;
     }
     
 }
