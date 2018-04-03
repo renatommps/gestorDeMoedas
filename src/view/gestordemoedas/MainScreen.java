@@ -671,6 +671,8 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
         market.updateValues();
         wallet.updateCoinStockValues(market.getCoins());
         jLabelTotalValue.setText(currencyFormatter.format(wallet.getTotalValue()));
+        updateSaleRealQuantity();
+        updateBuyingRealQuantity();
         jTableMarketCoins.repaint();
         jTableWalletCoins.repaint();
     }//GEN-LAST:event_jButton2ActionPerformed

@@ -8,8 +8,7 @@ import java.util.List;
 public class Market implements Serializable {
     
     private List<Coin> coins;
-    private MrCotator stockValueRandomizer;
-    private double credits;
+    private final MrCotator stockValueRandomizer;
     
     public Market(List<Coin> coins) {
         this.coins = coins;
@@ -33,10 +32,6 @@ public class Market implements Serializable {
     public Market setCoins(List<Coin> coins) {
         this.coins = coins;
         return this;
-    }
-    
-    public MrCotator getStockValueRandomizer() {
-        return stockValueRandomizer;
     }
     
     public void updateValues() {
