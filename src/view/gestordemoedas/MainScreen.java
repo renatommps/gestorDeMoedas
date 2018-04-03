@@ -3,6 +3,7 @@ package view.gestordemoedas;
 import gestordemoedas.Wallet;
 import gestordemoedas.Coin;
 import gestordemoedas.CurrencyFormatter;
+import gestordemoedas.FileManager;
 import gestordemoedas.GerenciadorDeUsuarios;
 import gestordemoedas.Market;
 import java.util.List;
@@ -26,9 +27,15 @@ public class MainScreen extends javax.swing.JFrame {
     
     private MainScreen() {
         this.currencyFormatter = new CurrencyFormatter("pt", "br");
-        //this.wallet = new Wallet();
-        this.market = new Market();
+        
         this.wallet = GerenciadorDeUsuarios.getInstance().getUsuarioAtual().getCarteira();
+        List<Coin> marketCoins = FileManager.getInstance().readAllObjects("mercado");
+        if (marketCoins.isEmpty()) {
+            this.market = new Market();
+        } else {
+            this.market = new Market(marketCoins);
+            this.wallet.updateCoinStockValues(marketCoins);
+        }
         this.walletTableModel = new WalletTableModel(this.wallet.getCoins());
         this.marketTableModel = new MarketTableModel(this.market.getCoins());
         
@@ -324,12 +331,22 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
     jTextFieldBuyingRealValue.setEditable(false);
 
     jButtonBuy.setText("Comprar");
+    jButtonBuy.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButtonBuyActionPerformed(evt);
+        }
+    });
 
     jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
     jLabel10.setText("Valor disponível na carteira em R$:");
 
     jLabelTotalCreditsMarket.setText(currencyFormatter.format(wallet.getCredits()));
 
+    jFormattedTextFieldBuyingQuantity.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jFormattedTextFieldBuyingQuantityActionPerformed(evt);
+        }
+    });
     jFormattedTextFieldBuyingQuantity.addKeyListener(new java.awt.event.KeyAdapter() {
         public void keyTyped(java.awt.event.KeyEvent evt) {
             jFormattedTextFieldBuyingQuantityKeyTyped(evt);
@@ -639,7 +656,7 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
     }//GEN-LAST:event_jFormattedTextFieldBuyingQuantityKeyTyped
 
     private void jFormattedTextFieldBuyingQuantityKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jFormattedTextFieldBuyingQuantityKeyReleased
-        // TODO add your handling code here:   
+        updateBuyingRealQuantity();
     }//GEN-LAST:event_jFormattedTextFieldBuyingQuantityKeyReleased
 
     private void jTabbedPane1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTabbedPane1MouseEntered
@@ -651,11 +668,56 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
     }//GEN-LAST:event_jTabbedPane1ComponentShown
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        market.getStockValueRandomizer().updateValues();
+        market.updateValues();
         wallet.updateCoinStockValues(market.getCoins());
         jTableMarketCoins.repaint();
         jTableWalletCoins.repaint();
     }//GEN-LAST:event_jButton2ActionPerformed
+    private void jFormattedTextFieldBuyingQuantityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jFormattedTextFieldBuyingQuantityActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jFormattedTextFieldBuyingQuantityActionPerformed
+
+    public void updateWallet(double creditsLeft, Coin coin) {
+        wallet.setCredits(creditsLeft);
+        wallet.updateCoin(coin);
+    }
+    
+    private void jButtonBuyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBuyActionPerformed
+        
+        int coinTableIndex = jComboBoxBuyingCoin.getSelectedIndex();
+        String buyingQuantityText = jFormattedTextFieldBuyingQuantity.getText().trim();
+        
+        if ( (coinTableIndex > -1) && (buyingQuantityText != null && !buyingQuantityText.isEmpty()) ) {
+            
+            Coin selectedCoin = market.getCoins().get(coinTableIndex);
+            double quantity = Double.parseDouble(buyingQuantityText);
+            double value = quantity * selectedCoin.getStockValue();
+            double creditsLeft = wallet.getCredits() - value;
+            
+            if (creditsLeft >= 0) {
+                updateWallet(creditsLeft, new Coin(selectedCoin).setQuantity(quantity));
+
+                jFormattedTextFieldBuyingQuantity.setText("");
+                
+                jLabelTotalValue.setText(currencyFormatter.format(wallet.getTotalValue()));
+                jLabelTotalCredits.setText(currencyFormatter.format(wallet.getCredits()));
+                jLabelTotalCreditsMarket.setText(currencyFormatter.format(wallet.getCredits()));
+                jTextFieldBuyingRealValue.setText("");
+                
+                GerenciadorDeUsuarios.getInstance().salvarUsuarioAtual();
+                
+                this.walletTableModel = new WalletTableModel(this.wallet.getCoins());
+                jTableWalletCoins.setModel(walletTableModel);
+                jTableWalletCoins.repaint();
+                
+                JOptionPane.showMessageDialog(null, "Venda realizada com sucésso.","Mensagem", JOptionPane.DEFAULT_OPTION);
+            } else {
+                JOptionPane.showMessageDialog(null, "Quantidade selecionada maior que a dispinível na carteira para a moeda selecionada.","Aviso", JOptionPane.WARNING_MESSAGE);
+            } 
+        } else {
+            JOptionPane.showMessageDialog(null, "Para efetuar uma compra você deve informar uma moeda e a quantidade a ser comprada.","Aviso", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_jButtonBuyActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;

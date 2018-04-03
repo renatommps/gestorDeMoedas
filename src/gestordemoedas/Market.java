@@ -38,5 +38,10 @@ public class Market implements Serializable {
     public MrCotator getStockValueRandomizer() {
         return stockValueRandomizer;
     }
+    
+    public void updateValues() {
+        stockValueRandomizer.updateValues();
+        FileManager.getInstance().writeAllObjects(coins, "mercado");
+    }
 
 }

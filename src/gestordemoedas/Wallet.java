@@ -32,6 +32,7 @@ public class Wallet implements Serializable {
         return this.coins;
     }
     
+    
     public Wallet setCoins(List<Coin> coins) {
         this.coins = coins;
         return this;
@@ -46,6 +47,16 @@ public class Wallet implements Serializable {
         return this;
     }
 
+    public void updateCoin(Coin coin) {
+        int coinIndex = this.coins.indexOf(coin);
+        
+        if (coinIndex < 0) {
+            this.coins.add(coin);
+        } else {
+            coins.set(coinIndex, coin);
+        }
+    }
+    
     public double getTotalValue() {
        return coins.stream().mapToDouble(coin -> coin.getQuantity() * coin.getStockValue()).sum();
     }

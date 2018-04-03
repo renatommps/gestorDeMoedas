@@ -24,7 +24,7 @@ public class GerenciadorDeUsuarios {
     
     public List<Usuario> carregarUsuarios() {
         List<Usuario> usuarios = new ArrayList<>();
-        List<Object> objs = FileManager.getInstance().readAllObjects("usuarios");
+        List<Usuario> objs = FileManager.getInstance().readAllObjects("usuarios");
         objs.forEach((o) -> {
             usuarios.add((Usuario) o);
         });

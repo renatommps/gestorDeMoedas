@@ -34,8 +34,8 @@ public class FileManager {
         
     }
     
-    public void writeObject(Object obj, String filename) {
-        List<Object> all = readAllObjects(filename);
+    public <T extends Identificable> void writeObject(Object obj, String filename) {
+        List<T> all = readAllObjects(filename);
         try {
             FileOutputStream file = new FileOutputStream(filename);
             ObjectOutputStream out = new ObjectOutputStream(file);
@@ -82,7 +82,7 @@ public class FileManager {
         try {
             FileInputStream file = new FileInputStream(filename);
             ObjectInputStream in = new ObjectInputStream(file);
-            List<Object> rewrite = new ArrayList<>();
+            List<T> rewrite = new ArrayList<>();
             try {
                 while (true) {
                     T obj = (T)in.readObject();
@@ -106,11 +106,11 @@ public class FileManager {
         }
     }
     
-    public List<Object> writeAllObjects(List<Object> objs, String filename) {
+    public <T extends Identificable> List<T> writeAllObjects(List<T> objs, String filename) {
         try {
             FileOutputStream file = new FileOutputStream(filename);
             ObjectOutputStream out = new ObjectOutputStream(file);
-            for (Object o : objs) {
+            for (T o : objs) {
                 out.writeObject(o);
             }
             out.close();
@@ -123,14 +123,14 @@ public class FileManager {
         return objs;
     }
     
-    public List<Object> readAllObjects(String filename) {
-        List<Object> objs = new ArrayList<>();
+    public <T extends Identificable> List<T> readAllObjects(String filename) {
+        List<T> objs = new ArrayList<>();
         try {
             FileInputStream file = new FileInputStream(filename);
             ObjectInputStream in = new ObjectInputStream(file);
             try {
                 while (true) {
-                    objs.add(in.readObject());
+                    objs.add((T)in.readObject());
                 }
             } catch (EOFException eof) {
                 //End of file. Break the loop.
