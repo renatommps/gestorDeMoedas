@@ -46,15 +46,9 @@ public class GerenciadorDeUsuarios {
     }
     
     public boolean autenticar(String usuario, String senha) {
-        Usuario match = null;
+        Usuario match = procurarUsuario(usuario);
         boolean ret = false;
-//        List<Usuario> usuarios = carregarUsuarios();
-//        for (Usuario u : usuarios) {
-//            if (u.getID().equalsIgnoreCase(usuario)) {
-//                match = u;
-//            }
-//        }
-        match = procurarUsuario(usuario);
+
         if (match == null) {
             match = new Usuario(usuario, senha);
             salvarUsuario(match);

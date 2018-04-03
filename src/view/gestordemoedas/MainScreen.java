@@ -3,8 +3,8 @@ package view.gestordemoedas;
 import gestordemoedas.Wallet;
 import gestordemoedas.Coin;
 import gestordemoedas.CurrencyFormatter;
-import gestordemoedas.FileManager;
 import gestordemoedas.GerenciadorDeUsuarios;
+import gestordemoedas.Market;
 import java.util.List;
 import javax.swing.JOptionPane;
 
@@ -617,7 +617,6 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
     }//GEN-LAST:event_jRadioButton1ActionPerformed
 
     private void jComboBoxBuyingCoinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxBuyingCoinActionPerformed
-        // TODO add your handling code here:
         updateBuyingRealQuantity();
     }//GEN-LAST:event_jComboBoxBuyingCoinActionPerformed
 
