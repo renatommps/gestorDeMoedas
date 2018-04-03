@@ -108,6 +108,7 @@ public class MainScreen extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTableMarketCoins = new javax.swing.JTable();
+        jButton2 = new javax.swing.JButton();
         jPanelTransfer = new javax.swing.JPanel();
         jRadioButton1 = new javax.swing.JRadioButton();
         jRadioButton2 = new javax.swing.JRadioButton();
@@ -408,6 +409,13 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
             .addContainerGap())
     );
 
+    jButton2.setText("Atualizar Cotação");
+    jButton2.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButton2ActionPerformed(evt);
+        }
+    });
+
     javax.swing.GroupLayout jPanelMarketLayout = new javax.swing.GroupLayout(jPanelMarket);
     jPanelMarket.setLayout(jPanelMarketLayout);
     jPanelMarketLayout.setHorizontalGroup(
@@ -418,13 +426,19 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
                 .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addContainerGap())
+        .addGroup(jPanelMarketLayout.createSequentialGroup()
+            .addGap(332, 332, 332)
+            .addComponent(jButton2)
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
     jPanelMarketLayout.setVerticalGroup(
         jPanelMarketLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelMarketLayout.createSequentialGroup()
             .addContainerGap()
             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 139, Short.MAX_VALUE)
+            .addGap(18, 18, 18)
+            .addComponent(jButton2)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 102, Short.MAX_VALUE)
             .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addContainerGap())
     );
@@ -636,9 +650,17 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTabbedPane1ComponentShown
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        market.getStockValueRandomizer().updateValues();
+        wallet.updateCoinStockValues(market.getCoins());
+        jTableMarketCoins.repaint();
+        jTableWalletCoins.repaint();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButtonBuy;
     private javax.swing.JButton jButtonSell;
     private javax.swing.JComboBox<String> jComboBoxBuyingCoin;

@@ -49,4 +49,14 @@ public class Wallet implements Serializable {
     public double getTotalValue() {
        return coins.stream().mapToDouble(coin -> coin.getQuantity() * coin.getStockValue()).sum();
     }
+    
+    public void updateCoinStockValues(List<Coin> stockCoins) {
+        for (Coin sc : stockCoins) {
+            for (Coin c : coins) {
+                if (c.getName().equals(sc.getName())) {
+                    c.setStockValue(sc.getStockValue());
+                }
+            }
+        }
+    } 
 }
