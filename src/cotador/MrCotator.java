@@ -1,20 +1,22 @@
-package gestordemoedas;
+package cotador;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class MrCotator {
     
-    private final List<Coin> coins;
+    private final List<Coinable> coins;
     
-    public MrCotator(List<Coin> _coins) {
-        coins = _coins;
+    public <T extends Coinable> MrCotator(List<T> _coins) {
+        coins = new ArrayList<Coinable>();
+        coins.addAll(_coins);
     }
     
     public void updateValues() {
         coins.forEach((c) -> {
             double newValue = Math.floor(100 * (c.getStockValue()*(0.9+0.2*Math.random()))) / 100;
-            c.setStockValue(newValue);
+            c.defineStockValue(newValue);
         });
     }
     

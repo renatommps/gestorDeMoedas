@@ -3,14 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gestordemoedas;
+package cotador;
 
 /**
  *
  * @author Rafael
  */
-public interface Identificable {
+public interface Coinable {
     
-    public String getID();
+    public double getStockValue();
+    public void defineStockValue(double value);
     
 }

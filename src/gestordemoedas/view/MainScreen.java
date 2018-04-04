@@ -1,12 +1,12 @@
-package view.gestordemoedas;
+package gestordemoedas.view;
 
-import gestordemoedas.BankManager;
-import gestordemoedas.Wallet;
-import gestordemoedas.Coin;
-import gestordemoedas.CurrencyFormatter;
-import gestordemoedas.FileManager;
-import gestordemoedas.GerenciadorDeUsuarios;
-import gestordemoedas.Market;
+import gestordemoedas.control.BankManager;
+import gestordemoedas.model.Wallet;
+import gestordemoedas.model.Coin;
+import gestordemoedas.control.CurrencyFormatter;
+import gerenciadordearquivos.FileManager;
+import autenticacao.GerenciadorDeUsuarios;
+import gestordemoedas.model.Market;
 import java.awt.HeadlessException;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -66,7 +66,7 @@ public class MainScreen extends javax.swing.JFrame {
                 (jFormattedTextFieldBuyingQuantity.getText() != null && !jFormattedTextFieldBuyingQuantity.getText().trim().isEmpty()) ){
             
             Coin selectedCoin = market.getCoins().get(jComboBoxBuyingCoin.getSelectedIndex());
-            double value = Double.parseDouble(jFormattedTextFieldBuyingQuantity.getText()) * selectedCoin.getStockValue();
+            double value = Double.parseDouble(jFormattedTextFieldBuyingQuantity.getText()) * (selectedCoin.getStockValue() + market.tax(selectedCoin));
             jTextFieldBuyingRealValue.setText(currencyFormatter.format(value));
             jTextFieldBuyingRealValue.repaint();
         } else {
@@ -285,7 +285,7 @@ public class MainScreen extends javax.swing.JFrame {
                 .addComponent(jLabel9)
                 .addComponent(jTextFieldSaleRealValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(jFormattedTextFieldSaleQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 101, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 64, Short.MAX_VALUE)
             .addComponent(jButtonSell)
             .addContainerGap())
     );
@@ -401,11 +401,11 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
         }
     });
     jFormattedTextFieldBuyingQuantity.addKeyListener(new java.awt.event.KeyAdapter() {
-        public void keyTyped(java.awt.event.KeyEvent evt) {
-            jFormattedTextFieldBuyingQuantityKeyTyped(evt);
-        }
         public void keyReleased(java.awt.event.KeyEvent evt) {
             jFormattedTextFieldBuyingQuantityKeyReleased(evt);
+        }
+        public void keyTyped(java.awt.event.KeyEvent evt) {
+            jFormattedTextFieldBuyingQuantityKeyTyped(evt);
         }
     });
 
@@ -452,7 +452,7 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
                 .addComponent(jLabel7)
                 .addComponent(jTextFieldBuyingRealValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(jFormattedTextFieldBuyingQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
             .addComponent(jButtonBuy)
             .addContainerGap())
     );
@@ -508,8 +508,8 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGap(18, 18, 18)
             .addComponent(jButton2)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 102, Short.MAX_VALUE)
-            .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(18, 18, 18)
+            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addContainerGap())
     );
 
@@ -614,7 +614,7 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
             .addGroup(jPanelTransferLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(jLabel11)
                 .addComponent(jLabelTotalCreditsForTransfer))
-            .addContainerGap(303, Short.MAX_VALUE))
+            .addContainerGap(258, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Transferência", jPanelTransfer);
@@ -632,8 +632,8 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(layout.createSequentialGroup()
             .addContainerGap()
-            .addComponent(jTabbedPane1)
-            .addContainerGap())
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 524, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     pack();
@@ -685,7 +685,7 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
                 
                 jTableWalletCoins.repaint();
                 
-                JOptionPane.showMessageDialog(null, "Venda realizada com sucésso.","Mensagem", JOptionPane.DEFAULT_OPTION);
+                JOptionPane.showMessageDialog(null, "Venda realizada com sucesso.","Mensagem", JOptionPane.DEFAULT_OPTION);
             } else {
                 JOptionPane.showMessageDialog(null, "Quantidade selecionada maior que a dispinível na carteira para a moeda selecionada.","Aviso", JOptionPane.WARNING_MESSAGE);
             } 
@@ -792,9 +792,11 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
                 
                 this.walletTableModel = new WalletTableModel(this.wallet.getCoins());
                 jTableWalletCoins.setModel(walletTableModel);
+                jComboBoxSaleCurrency.setModel(new javax.swing.DefaultComboBoxModel<>(wallet.getCoins().stream().map(Coin::getName).toArray(String[]::new)));
+                jComboBoxSaleCurrency.repaint();
                 jTableWalletCoins.repaint();
                 
-                JOptionPane.showMessageDialog(null, "Venda realizada com sucésso.","Mensagem", JOptionPane.DEFAULT_OPTION);
+                JOptionPane.showMessageDialog(null, "Compra realizada com sucesso.","Mensagem", JOptionPane.DEFAULT_OPTION);
             } else {
                 JOptionPane.showMessageDialog(null, "Quantidade selecionada maior que a dispinível na carteira para a moeda selecionada.","Aviso", JOptionPane.WARNING_MESSAGE);
             } 

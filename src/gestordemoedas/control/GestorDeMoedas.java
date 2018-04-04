@@ -1,6 +1,6 @@
-package gestordemoedas;
+package gestordemoedas.control;
 
-import view.gestordemoedas.LoginFrame;
+import gestordemoedas.view.LoginFrame;
 
 
 public class GestorDeMoedas {

@@ -1,5 +1,8 @@
-package gestordemoedas;
+package gestordemoedas.model;
 
+import gerenciadordearquivos.FileManager;
+import cotador.MrCotator;
+import calculadordetaxa.TaxCalculator;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +12,12 @@ public class Market implements Serializable {
     
     private List<Coin> coins;
     private final MrCotator stockValueRandomizer;
+    private final TaxCalculator taxCalculator;
     
     public Market(List<Coin> coins) {
         this.coins = coins;
         stockValueRandomizer = new MrCotator(coins);
+        taxCalculator = new TaxCalculator();
     }
 
     public Market() {
@@ -23,6 +28,7 @@ public class Market implements Serializable {
         coins.add(new Coin("Gil", 0, 5.60, false));
         coins.add(new Coin("Euro", 0, 4.50, false));
         stockValueRandomizer = new MrCotator(coins);
+        taxCalculator = new TaxCalculator();
     }
 
     public List<Coin> getCoins() {
@@ -37,6 +43,10 @@ public class Market implements Serializable {
     public void updateValues() {
         stockValueRandomizer.updateValues();
         FileManager.getInstance().writeAllObjects(coins, "mercado");
+    }
+    
+    public double tax(Coin c) {
+        return taxCalculator.tax(c);
     }
 
 }

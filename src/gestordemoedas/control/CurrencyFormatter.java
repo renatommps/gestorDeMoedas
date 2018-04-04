@@ -1,4 +1,4 @@
-package gestordemoedas;
+package gestordemoedas.control;
 
 import java.text.NumberFormat;
 import java.util.Locale;

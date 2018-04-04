@@ -1,5 +1,7 @@
-package gestordemoedas;
+package autenticacao;
 
+import gerenciadordearquivos.Identificable;
+import gestordemoedas.model.Wallet;
 import java.io.Serializable;
 
 

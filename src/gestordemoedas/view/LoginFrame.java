@@ -1,6 +1,6 @@
-package view.gestordemoedas;
+package gestordemoedas.view;
 
-import gestordemoedas.GerenciadorDeUsuarios;
+import autenticacao.GerenciadorDeUsuarios;
 
 
 public class LoginFrame extends javax.swing.JFrame {

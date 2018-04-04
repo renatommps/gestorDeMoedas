@@ -1,9 +1,12 @@
-package gestordemoedas;
+package gestordemoedas.model;
 
+import cotador.Coinable;
+import gerenciadordearquivos.Identificable;
+import calculadordetaxa.Taxable;
 import java.io.Serializable;
 
 
-public class Coin implements Serializable, Identificable {
+public class Coin implements Serializable, Identificable, Coinable, Taxable {
 
     private String name;
     private double quantity;
@@ -53,6 +56,10 @@ public class Coin implements Serializable, Identificable {
     public Coin setStockValue(double stockValue) {
         this.stockValue = stockValue;
         return this;
+    }
+    
+    public void defineStockValue(double value) {
+        this.setStockValue(value);
     }
     
     public boolean isCrypto() {

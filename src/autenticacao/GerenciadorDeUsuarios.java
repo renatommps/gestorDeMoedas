@@ -1,6 +1,6 @@
-package gestordemoedas;
+package autenticacao;
 
-import gestordemoedas.FileManager;
+import gerenciadordearquivos.FileManager;
 import java.util.ArrayList;
 import java.util.List;
 

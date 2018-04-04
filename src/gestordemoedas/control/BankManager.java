@@ -1,4 +1,4 @@
-package gestordemoedas;
+package gestordemoedas.control;
 
 
 public class BankManager {
