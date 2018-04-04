@@ -1,11 +1,13 @@
 package view.gestordemoedas;
 
+import gestordemoedas.BankManager;
 import gestordemoedas.Wallet;
 import gestordemoedas.Coin;
 import gestordemoedas.CurrencyFormatter;
 import gestordemoedas.FileManager;
 import gestordemoedas.GerenciadorDeUsuarios;
 import gestordemoedas.Market;
+import java.awt.HeadlessException;
 import java.util.List;
 import javax.swing.JOptionPane;
 
@@ -18,6 +20,7 @@ public class MainScreen extends javax.swing.JFrame {
     private Market market;
     private WalletTableModel walletTableModel;
     private MarketTableModel marketTableModel;
+    private BankManager bankManager;
     
     public static MainScreen getInstance() {
         if (instance == null)
@@ -38,6 +41,7 @@ public class MainScreen extends javax.swing.JFrame {
         }
         this.walletTableModel = new WalletTableModel(this.wallet.getCoins());
         this.marketTableModel = new MarketTableModel(this.market.getCoins());
+        this.bankManager = new BankManager();
         
         initComponents();
         this.setVisible(true);  
@@ -71,11 +75,58 @@ public class MainScreen extends javax.swing.JFrame {
         }
     }
     
+    private void updateCreditListenners() {
+        jLabelTotalCredits.setText(currencyFormatter.format(wallet.getCredits()));
+        jLabelTotalCreditsMarket.setText(currencyFormatter.format(wallet.getCredits()));
+        jLabelTotalCreditsForTransfer.setText(currencyFormatter.format(wallet.getCredits()));    
+    }
+        
     public void consumeLetter(java.awt.event.KeyEvent evt) {
         char c  = evt.getKeyChar();
         if (Character.isLetter(c) && !evt.isAltDown()) {
             evt.consume();
         }
+    }
+    
+    private void handleDeposit() {
+        String account = jTextFieldTransferAccount.getText().trim();
+        double value = Double.parseDouble(jTextFieldTransferValue.getText().trim());
+       
+        if (value <= this.wallet.getCredits()) {
+            try {
+                if( this.bankManager.deposit(account, value) ){
+                    double updatedCredits = this.wallet.getCredits() - value;
+                    this.wallet.setCredits(updatedCredits);
+                    updateCreditListenners();
+
+                    JOptionPane.showMessageDialog(null, "Transação efetuada com sucésso.","Mensagem", JOptionPane.DEFAULT_OPTION);
+                }
+            } catch (HeadlessException e) {
+                JOptionPane.showMessageDialog(null, "Algum erro ocorreu no meio da transação.","Mensagem", JOptionPane.WARNING_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Créditos insuficientes.","Mensagem", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
+    private void handleWithdraw() {
+        String account = jTextFieldTransferAccount.getText().trim();
+        double value = Double.parseDouble(jTextFieldTransferValue.getText().trim());
+       
+        try {
+            if( this.bankManager.withdraw(account, value) ){
+                double updatedCredits = this.wallet.getCredits() + value;
+                this.wallet.setCredits(updatedCredits);
+                updateCreditListenners();
+
+                JOptionPane.showMessageDialog(null, "Transação efetuada com sucésso.","Mensagem", JOptionPane.DEFAULT_OPTION);
+            } else {
+                JOptionPane.showMessageDialog(null, "Conta sem fundo suficiente para o saque","Mensagem", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (HeadlessException e) {
+            JOptionPane.showMessageDialog(null, "Algum erro ocorreu no meio da transação.","Mensagem", JOptionPane.WARNING_MESSAGE);
+        }
+        
     }
         
     @SuppressWarnings("unchecked")
@@ -117,13 +168,15 @@ public class MainScreen extends javax.swing.JFrame {
         jTableMarketCoins = new javax.swing.JTable();
         jButton2 = new javax.swing.JButton();
         jPanelTransfer = new javax.swing.JPanel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
+        jRadioButtonDeposit = new javax.swing.JRadioButton();
+        jRadioButtonWithdraw = new javax.swing.JRadioButton();
         jLabel1 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
+        jTextFieldTransferAccount = new javax.swing.JTextField();
+        jTextFieldTransferValue = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        jLabel11 = new javax.swing.JLabel();
+        jLabelTotalCreditsForTransfer = new javax.swing.JLabel();
 
         jToolBar1.setRollover(true);
 
@@ -464,29 +517,36 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
 
     jPanelTransfer.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-    buttonGroup1.add(jRadioButton1);
-    jRadioButton1.setSelected(true);
-    jRadioButton1.setText("Depoósito");
-    jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
+    buttonGroup1.add(jRadioButtonDeposit);
+    jRadioButtonDeposit.setSelected(true);
+    jRadioButtonDeposit.setText("Depoósito");
+    jRadioButtonDeposit.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jRadioButton1ActionPerformed(evt);
+            jRadioButtonDepositActionPerformed(evt);
         }
     });
+    jRadioButtonDeposit.setActionCommand("deposito");
 
-    buttonGroup1.add(jRadioButton2);
-    jRadioButton2.setText("Saque");
+    buttonGroup1.add(jRadioButtonWithdraw);
+    jRadioButtonWithdraw.setText("Saque");
+    jRadioButtonWithdraw.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jRadioButtonWithdrawActionPerformed(evt);
+        }
+    });
+    jRadioButtonWithdraw.setActionCommand("saque");
 
     jLabel1.setText("Conta bancária:");
 
-    jTextField2.addActionListener(new java.awt.event.ActionListener() {
+    jTextFieldTransferAccount.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jTextField2ActionPerformed(evt);
+            jTextFieldTransferAccountActionPerformed(evt);
         }
     });
 
-    jTextField3.addActionListener(new java.awt.event.ActionListener() {
+    jTextFieldTransferValue.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jTextField3ActionPerformed(evt);
+            jTextFieldTransferValueActionPerformed(evt);
         }
     });
 
@@ -499,6 +559,11 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
         }
     });
 
+    jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+    jLabel11.setText("Valor disponível para saque R$:");
+
+    jLabelTotalCreditsForTransfer.setText(currencyFormatter.format(wallet.getCredits()));
+
     javax.swing.GroupLayout jPanelTransferLayout = new javax.swing.GroupLayout(jPanelTransfer);
     jPanelTransfer.setLayout(jPanelTransferLayout);
     jPanelTransferLayout.setHorizontalGroup(
@@ -509,18 +574,23 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
                 .addGroup(jPanelTransferLayout.createSequentialGroup()
                     .addComponent(jLabel1)
                     .addGap(18, 18, 18)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 447, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldTransferAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 447, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanelTransferLayout.createSequentialGroup()
                     .addComponent(jLabel2)
                     .addGap(18, 18, 18)
                     .addGroup(jPanelTransferLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addGroup(jPanelTransferLayout.createSequentialGroup()
-                            .addComponent(jRadioButton1)
+                            .addComponent(jRadioButtonDeposit)
                             .addGap(18, 18, 18)
-                            .addComponent(jRadioButton2)
+                            .addComponent(jRadioButtonWithdraw)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton1))
-                        .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 447, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(jTextFieldTransferValue, javax.swing.GroupLayout.PREFERRED_SIZE, 447, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanelTransferLayout.createSequentialGroup()
+                            .addGap(106, 106, 106)
+                            .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(jLabelTotalCreditsForTransfer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
             .addContainerGap(278, Short.MAX_VALUE))
     );
     jPanelTransferLayout.setVerticalGroup(
@@ -529,18 +599,22 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
             .addGap(78, 78, 78)
             .addGroup(jPanelTransferLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(jLabel1)
-                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jTextFieldTransferAccount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addGroup(jPanelTransferLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(jLabel2)
-                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jTextFieldTransferValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGap(18, 18, 18)
             .addGroup(jPanelTransferLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                 .addComponent(jButton1)
                 .addGroup(jPanelTransferLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButton1)
-                    .addComponent(jRadioButton2)))
-            .addContainerGap(362, Short.MAX_VALUE))
+                    .addComponent(jRadioButtonDeposit)
+                    .addComponent(jRadioButtonWithdraw)))
+            .addGap(52, 52, 52)
+            .addGroup(jPanelTransferLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(jLabel11)
+                .addComponent(jLabelTotalCreditsForTransfer))
+            .addContainerGap(303, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Transferência", jPanelTransfer);
@@ -602,8 +676,9 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
                 
                 jFormattedTextFieldSaleQuantity.setText("");
                 jLabelTotalValue.setText(currencyFormatter.format(wallet.getTotalValue()));
-                jLabelTotalCredits.setText(currencyFormatter.format(wallet.getCredits()));
-                jLabelTotalCreditsMarket.setText(currencyFormatter.format(wallet.getCredits()));
+                
+                updateCreditListenners();
+                
                 jTextFieldSaleRealValue.setText("");
                 
                 GerenciadorDeUsuarios.getInstance().salvarUsuarioAtual();
@@ -632,20 +707,25 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
     }//GEN-LAST:event_jComboBoxSaleCurrencyItemStateChanged
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        String transaction = buttonGroup1.getSelection().getActionCommand();
+        if (transaction.equals("saque")) {
+            handleWithdraw();
+        } else {
+            handleDeposit();
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void jTextFieldTransferValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldTransferValueActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_jTextFieldTransferValueActionPerformed
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+    private void jTextFieldTransferAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldTransferAccountActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
+    }//GEN-LAST:event_jTextFieldTransferAccountActionPerformed
 
-    private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButton1ActionPerformed
+    private void jRadioButtonDepositActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonDepositActionPerformed
+   // TODO add your handling code here:
+    }//GEN-LAST:event_jRadioButtonDepositActionPerformed
 
     private void jComboBoxBuyingCoinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxBuyingCoinActionPerformed
         updateBuyingRealQuantity();
@@ -703,8 +783,9 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
                 jFormattedTextFieldBuyingQuantity.setText("");
                 
                 jLabelTotalValue.setText(currencyFormatter.format(wallet.getTotalValue()));
-                jLabelTotalCredits.setText(currencyFormatter.format(wallet.getCredits()));
-                jLabelTotalCreditsMarket.setText(currencyFormatter.format(wallet.getCredits()));
+                
+                updateCreditListenners();
+                
                 jTextFieldBuyingRealValue.setText("");
                 
                 GerenciadorDeUsuarios.getInstance().salvarUsuarioAtual();
@@ -722,6 +803,10 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
         }
     }//GEN-LAST:event_jButtonBuyActionPerformed
 
+    private void jRadioButtonWithdrawActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonWithdrawActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jRadioButtonWithdrawActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
@@ -734,6 +819,7 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
     private javax.swing.JFormattedTextField jFormattedTextFieldSaleQuantity;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -744,6 +830,7 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
     private javax.swing.JLabel jLabelTotal;
     private javax.swing.JLabel jLabelTotal1;
     private javax.swing.JLabel jLabelTotalCredits;
+    private javax.swing.JLabel jLabelTotalCreditsForTransfer;
     private javax.swing.JLabel jLabelTotalCreditsMarket;
     private javax.swing.JLabel jLabelTotalValue;
     private javax.swing.JPanel jPanel1;
@@ -753,17 +840,17 @@ jComboBoxBuyingCoin.addActionListener(new java.awt.event.ActionListener() {
     private javax.swing.JPanel jPanelMarket;
     private javax.swing.JPanel jPanelTransfer;
     private javax.swing.JPanel jPanelWallet;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
+    private javax.swing.JRadioButton jRadioButtonDeposit;
+    private javax.swing.JRadioButton jRadioButtonWithdraw;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTableMarketCoins;
     private javax.swing.JTable jTableWalletCoins;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextFieldBuyingRealValue;
     private javax.swing.JTextField jTextFieldSaleRealValue;
+    private javax.swing.JTextField jTextFieldTransferAccount;
+    private javax.swing.JTextField jTextFieldTransferValue;
     private javax.swing.JToolBar jToolBar1;
     // End of variables declaration//GEN-END:variables
 }

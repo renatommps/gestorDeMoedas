@@ -32,7 +32,6 @@ public class Wallet implements Serializable {
         return this.coins;
     }
     
-    
     public Wallet setCoins(List<Coin> coins) {
         this.coins = coins;
         return this;
